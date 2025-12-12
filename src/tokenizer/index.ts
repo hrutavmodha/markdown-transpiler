@@ -30,26 +30,23 @@ export default function tokenize(src: string): Tokens {
             })
         }
         // Bold
-        if (src[i] === '*') {
-            console.log('First condition matched')
-            let k: number = i + 1
-            if (src[k] === '*') {
-                console.log('Second condition matched')
-                let boldText: string = ''
-                console.log('Source[Iterator + 1] is', src[k + 1])
-                while (src[k] !== '*') {
-                    console.log('Entered in while loop')
-                    boldText += src[k]
-                    k++
-                }
-                tokens.push({
-                    type: 'Bold',
-                    metadata: {
-                        text: boldText
-                    }
-                })
-                i = k + 1
+        if (
+            src[i] === '*' &&
+            src[i + 1] === '*'
+        ) {
+            let k: number = i + 2
+            let boldText: string = ''
+            while (src[k] !== '*') {
+                boldText += src[k]
+                k++
             }
+            tokens.push({
+                type: 'Bold',
+                metadata: {
+                    text: boldText
+                }
+            })
+            i = k + 1
         }
         console.log(src[i])
         i++
