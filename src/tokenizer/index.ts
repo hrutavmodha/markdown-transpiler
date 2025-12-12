@@ -1,9 +1,32 @@
 import type { Tokens } from '../../types/token.d.ts'
 
+function isAlphabet(ch: string): boolean {
+    if (ch.length > 1) {
+        return false
+    }
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
+} 
+
 export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
     let i: number = 0
     while (i < src.length) {
+        // Normal Text
+        if (isAlphabet(src[i] as string)) {
+            let paragraph: string = ''
+            let k: number = i
+            while (src[k] !== '\n') {
+                paragraph += src[k]
+                k++
+            }
+            tokens.push({
+                type: 'Paragraph',
+                metadata: {
+                    text: paragraph
+                }
+            })
+            i = k
+        }
         // Heading
         if (src[i] === '#') {
             let level: number = 1
@@ -20,7 +43,6 @@ export default function tokenize(src: string): Tokens {
                 headingText += src[k]
                 k++
             }
-            i = k
             tokens.push({
                 type: 'Heading',
                 metadata: {
@@ -28,6 +50,7 @@ export default function tokenize(src: string): Tokens {
                     text: headingText.trim()
                 }
             })
+            i = k
         }
         // Bold
         if (
@@ -53,7 +76,7 @@ export default function tokenize(src: string): Tokens {
             src[i] === '_' && 
             src[i + 1] === '_'
          ) {
-            let k: number = i + 1
+            let k: number = i + 2
             let italicsText: string = ''
             while (src[k] !== '_') {
                 italicsText += src[k]
@@ -67,7 +90,6 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
-        // 
         i++
     }
     return tokens
