@@ -6,6 +6,10 @@ const markdown = `
     This should be tokenized as paragraph
     __Its italics text__
     \`console.log('Hello World')\`
+    \`\`\` js
+    let a = 'Hello World'
+    console.log(a)
+    \`\`\`
 `
 
 const tokens = tokenize(markdown)

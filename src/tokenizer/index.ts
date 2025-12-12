@@ -1,5 +1,8 @@
 import type { Tokens } from '../../types/token.d.ts'
-import isAlphabet from './utils.ts'
+import {
+    isAlphabet,
+    isCodeBlock
+} from './utils.ts'
 
 export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
@@ -100,7 +103,28 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
-
+        // Code Block
+        else if (isCodeBlock(src[i] as string + src[i + 1] + src[i + 2])) {
+            let language: string = ''
+            let code: string = ''
+            let k: number = i + 2 
+            while (src[k] !== '\n') {
+                language += src[k]
+                k++
+            }
+            while (isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
+                code += src[k]
+                k++
+            }
+            tokens.push({
+                type: 'CodeBlock', 
+                metadata: {
+                    language: language,
+                    text: code
+                }
+            })
+            i = k + 1
+        }
         i++
     }
     return tokens

@@ -1,4 +1,4 @@
-export default function isAlphabet(ch: string): boolean {
+export function isAlphabet(ch: string): boolean {
     if (ch.length > 1) {
         return false
     }
@@ -10,3 +10,10 @@ export default function isAlphabet(ch: string): boolean {
         ch <= 'z'
     )
 } 
+
+export function isCodeBlock(ch: string): boolean {
+    if (ch.length > 3) {
+        return false
+    }
+    return ch === '```'
+}
