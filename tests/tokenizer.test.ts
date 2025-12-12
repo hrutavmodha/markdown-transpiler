@@ -5,6 +5,7 @@ const markdown = `
     **This is a bold text**
     This should be tokenized as paragraph
     __Its italics text__
+    \`console.log('Hello World')\`
 `
 
 const tokens = tokenize(markdown)

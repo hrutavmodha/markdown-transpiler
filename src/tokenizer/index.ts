@@ -1,11 +1,5 @@
 import type { Tokens } from '../../types/token.d.ts'
-
-function isAlphabet(ch: string): boolean {
-    if (ch.length > 1) {
-        return false
-    }
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
-} 
+import isAlphabet from './utils.ts'
 
 export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
@@ -90,6 +84,23 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
+        // Inline Code
+        if (src[i] === '`') {
+            let k: number = i + 1
+            let code: string = ''
+            while (src[k] !== '`') {
+                code += src[k]
+                k++
+            }
+            tokens.push({
+                type: 'InlineCode',
+                metadata: {
+                    text: code
+                }
+            })
+            i = k + 1
+        }
+
         i++
     }
     return tokens
