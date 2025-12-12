@@ -7,7 +7,7 @@ export default function tokenize(src: string): Tokens {
         // Headings
         if (src[i] === '#') {
             let level: number = 1
-            let heading: string = ''
+            let headingText: string = ''
             let k: number = i + 1
             while (src[k] !== ' ') {
                 level++
@@ -17,7 +17,7 @@ export default function tokenize(src: string): Tokens {
                 k < src.length &&
                 src[k] !== '\n'
             ) {
-                heading += src[k]
+                headingText += src[k]
                 k++
             }
             i = k
@@ -25,10 +25,33 @@ export default function tokenize(src: string): Tokens {
                 type: 'Heading',
                 metadata: {
                     level: level,
-                    value: heading
+                    text: headingText
                 }
             })
         }
+        // Bold
+        if (src[i] === '*') {
+            console.log('First condition matched')
+            let k: number = i + 1
+            if (src[k] === '*') {
+                console.log('Second condition matched')
+                let boldText: string = ''
+                console.log('Source[Iterator + 1] is', src[k + 1])
+                while (src[k] !== '*') {
+                    console.log('Entered in while loop')
+                    boldText += src[k]
+                    k++
+                }
+                tokens.push({
+                    type: 'Bold',
+                    metadata: {
+                        text: boldText
+                    }
+                })
+                i = k + 1
+            }
+        }
+        console.log(src[i])
         i++
     }
     return tokens
