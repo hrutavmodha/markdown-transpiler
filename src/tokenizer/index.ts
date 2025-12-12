@@ -25,7 +25,7 @@ export default function tokenize(src: string): Tokens {
                 type: 'Heading',
                 metadata: {
                     level: level,
-                    text: headingText
+                    text: headingText.trim()
                 }
             })
         }
