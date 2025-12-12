@@ -4,7 +4,7 @@ export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
     let i: number = 0
     while (i < src.length) {
-        // Headings
+        // Heading
         if (src[i] === '#') {
             let level: number = 1
             let headingText: string = ''
@@ -49,7 +49,10 @@ export default function tokenize(src: string): Tokens {
             i = k + 1
         }
         // Italics
-        if (src[i] === '_') {
+        if (
+            src[i] === '_' && 
+            src[i + 1] === '_'
+         ) {
             let k: number = i + 1
             let italicsText: string = ''
             while (src[k] !== '_') {
@@ -64,6 +67,7 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
+        // 
         i++
     }
     return tokens
