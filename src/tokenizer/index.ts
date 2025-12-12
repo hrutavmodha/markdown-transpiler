@@ -48,7 +48,22 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
-        console.log(src[i])
+        // Italics
+        if (src[i] === '_') {
+            let k: number = i + 1
+            let italicsText: string = ''
+            while (src[k] !== '_') {
+                italicsText += src[k]
+                k++
+            }
+            tokens.push({
+                type: 'Italics',
+                metadata: {
+                    text: italicsText
+                }
+            })
+            i = k + 1
+        }
         i++
     }
     return tokens
