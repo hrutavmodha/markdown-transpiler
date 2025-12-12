@@ -1,0 +1,17 @@
+{
+  "name": "markdown-compiler",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.js",
+  "keywords": [],
+  "author": "Hrutav Modha",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.0.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
