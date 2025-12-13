@@ -10,8 +10,10 @@ const markdown = `
     let a = 'Hello World'
     console.log(a)
     \`\`\`
-    - List Item Number 1
-    - List Item Number 2
+    - List Circle 1
+    - List Circle 2
+    * List Disc 1        
+    * List Disc 2
 `
 
 const tokens = tokenize(markdown)

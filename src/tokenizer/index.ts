@@ -128,15 +128,61 @@ export default function tokenize(src: string): Tokens {
                 list += src[k]
                 k++
             }
-            tokens.push({
-                type: 'DiscList',
-                metadata: {
-                    text: list.trim()
-                }
-            })
+            if (list) {
+                tokens.push({
+                    type: 'UnorderedListDisc',
+                    metadata: {
+                        text: list.trim()
+                    }
+                })
+            } 
             i = k + 1
         }
-        // Unordered List - Circle    
+        // Unordered List - Disc 
+        else if (src[i] === '*') {
+            let k: number = i + 1
+            let list: string = ''
+            while ((
+                isAlphabet(src[k] as string) ||
+                isNumber(src[k] as string) ||
+                src[k] === ' '
+            ) && src[k] !== '\n'
+            ) {
+                list += src[k]
+                k++
+            }
+            if (list) {
+                tokens.push({
+                    type: 'UnorderedListDisc',
+                    metadata: {
+                        text: list.trim()
+                    }
+                })
+            } 
+            i = k + 1
+        }   
+        // Ordered List - Number
+        else if (isNumber(src[i] as string)) {
+            let k: number = i + 1
+            let list: string = ''
+            while ((
+                isAlphabet(src[k] as string) ||
+                isNumber(src[k] as string) ||
+                src[k] === ' '
+            ) && src[k] !== '\n'
+            ) {
+                list += src[k]
+                k++
+            }
+            if (list) {
+                tokens.push({
+                    type: 'OrderedListNumber',
+                    metadata: {
+                        text: list.trim()
+                    }
+                })
+            } 
+        }        
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i
