@@ -7,9 +7,13 @@
   "keywords": [],
   "author": "Hrutav Modha",
   "license": "MIT",
+  "scripts": {
+    "test": "vitest run"
+  },
   "devDependencies": {
     "@types/node": "^25.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   },
   "dependencies": {
     "ts-node": "^10.9.2"

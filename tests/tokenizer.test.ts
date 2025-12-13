@@ -1,21 +1,21 @@
+import { describe, it, expect } from 'vitest'
 import tokenize from '../src/tokenizer/index.ts'
 
-const markdown = `
-    ## Hello World
-    **This is a bold text**
-    __Its italics text__
-    This is a __mixed__ **text**
-    \`console.log('Hello World')\`
-    \`\`\` js
-    let a = 'Hello World'
-    console.log(a)
-    \`\`\`
-    - List Circle 1
-    - List Circle 2
-    * List Disc 1        
-    * List Disc 2
-`
-
-const tokens = tokenize(markdown)
-
-console.log(JSON.stringify(tokens, null, 4))
+describe('tokenizer', () => {
+    console.log('Descibe triggered')
+    it('should handle headings', () => {
+        console.log('It triggered')
+        const markdown = '# Hello World'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Heading',
+                metadata: {
+                    level: 1,
+                    text: 'Hello World',
+                },
+            },
+        ])
+    })
+    console.log('It completed')
+})
