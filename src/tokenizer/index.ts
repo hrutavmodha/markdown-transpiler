@@ -40,10 +40,14 @@ export default function tokenize(src: string): Tokens {
         ) {
             let k: number = i + 2
             let boldText: string = ''
-            while (src[k] !== '*') {
+            while (
+                src[k] !== '*' &&
+                src[k + 1] !== '*'
+            ) {
                 boldText += src[k]
                 k++
             }
+            boldText += src[k]
             tokens.push({
                 type: 'Bold',
                 metadata: {
@@ -59,10 +63,14 @@ export default function tokenize(src: string): Tokens {
          ) {
             let k: number = i + 2
             let italicsText: string = ''
-            while (src[k] !== '_') {
+            while (
+                src[k] !== '_' &&
+                src[k + 1] !== '_'
+            ) {
                 italicsText += src[k]
                 k++
             }
+            italicsText += src[k]
             tokens.push({
                 type: 'Italics',
                 metadata: {
@@ -84,13 +92,9 @@ export default function tokenize(src: string): Tokens {
                 k < src.length &&
                 !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2]    
             )) {
-                console.log('K is', k)
-                console.log('Source[k] is', src[k])
                 code += src[k]
                 k++
             }
-            console.log('Code block is', code)
-            console.log('Language is', language)
             tokens.push({
                 type: 'CodeBlock', 
                 metadata: {
@@ -128,13 +132,14 @@ export default function tokenize(src: string): Tokens {
                 paragraphText += src[k]
                 k++
             }
-            i = k
+            console.log(`Paragraph is '${paragraphText}'`)
             tokens.push({
                 type: 'Paragraph',
                 metadata: {
                     text: paragraphText
                 }
             })
+            i = k
         }
         i++
     }

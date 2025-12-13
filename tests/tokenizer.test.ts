@@ -3,8 +3,8 @@ import tokenize from '../src/tokenizer/index.ts'
 const markdown = `
     ## Hello World
     **This is a bold text**
-    This should be tokenized as paragraph
     __Its italics text__
+    This is a __mixed__ **text**
     \`console.log('Hello World')\`
     \`\`\` js
     let a = 'Hello World'
