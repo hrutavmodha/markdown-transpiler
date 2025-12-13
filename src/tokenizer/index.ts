@@ -1,7 +1,8 @@
 import type { Tokens } from '../../types/token.d.ts'
 import {
     isAlphabet,
-    isCodeBlock
+    isCodeBlock,
+    isNumber
 } from './utils.ts'
 
 export default function tokenize(src: string): Tokens {
@@ -114,19 +115,42 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
+        // Unordered List - Circle
+        else if (src[i] === '-') {
+            let k: number = i + 1
+            let list: string = ''
+            while ((
+                isAlphabet(src[k] as string) ||
+                isNumber(src[k] as string) ||
+                src[k] === ' '
+            ) && src[k] !== '\n'
+            ) {
+                list += src[k]
+                k++
+            }
+            tokens.push({
+                type: 'DiscList',
+                metadata: {
+                    text: list.trim()
+                }
+            })
+            i = k + 1
+        }
+        // Unordered List - Circle    
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i
             let paragraphText: string = ''
             while ((
-                isAlphabet(src[k] as string) ||
+                isAlphabet(src[k] as string) || 
+                isNumber(src[k] as string) ||
                 src[k] === ' '
             ) && src[k] !== '\n'
             ) {
+                console.log(isNumber(src[k] as string), src[k])
                 paragraphText += src[k]
                 k++
             }
-            console.log(`Paragraph is '${paragraphText}'`)
             tokens.push({
                 type: 'Paragraph',
                 metadata: {
