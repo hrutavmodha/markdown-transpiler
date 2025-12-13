@@ -8,7 +8,7 @@ export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
     let i: number = 0
     while (i < src.length) {
-        // Heading
+        // Headings
         if (src[i] === '#') {
             let level: number = 1
             let headingText: string = ''
@@ -17,10 +17,7 @@ export default function tokenize(src: string): Tokens {
                 level++
                 k++
             }
-            while (
-                k < src.length &&
-                src[k] !== '\n'
-            ) {
+            while (src[k] !== '\n') {
                 headingText += src[k]
                 k++
             }
@@ -88,10 +85,7 @@ export default function tokenize(src: string): Tokens {
                 language += src[k]
                 k++
             }
-            while (
-                k < src.length &&
-                !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2]    
-            )) {
+            while (!isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
                 code += src[k]
                 k++
             }
@@ -139,7 +133,7 @@ export default function tokenize(src: string): Tokens {
                     text: paragraphText
                 }
             })
-            i = k
+            i = k - 1
         }
         i++
     }
