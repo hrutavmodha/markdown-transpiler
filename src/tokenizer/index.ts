@@ -18,7 +18,7 @@ export default function tokenize(src: string): Tokens {
                 level++
                 k++
             }
-            while (src[k] !== '\n') {
+            while (k < src.length && src[k] !== '\n') {
                 headingText += src[k]
                 k++
             }
@@ -158,31 +158,9 @@ export default function tokenize(src: string): Tokens {
                         text: list.trim()
                     }
                 })
-            } 
-            i = k + 1
-        }   
-        // Ordered List - Number
-        else if (isNumber(src[i] as string)) {
-            let k: number = i + 1
-            let list: string = ''
-            while ((
-                isAlphabet(src[k] as string) ||
-                isNumber(src[k] as string) ||
-                src[k] === ' '
-            ) && src[k] !== '\n'
-            ) {
-                list += src[k]
-                k++
             }
-            if (list) {
-                tokens.push({
-                    type: 'OrderedListNumber',
-                    metadata: {
-                        text: list.trim()
-                    }
-                })
-            } 
-        }        
+            i = k + 1
+        }
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i
@@ -193,7 +171,6 @@ export default function tokenize(src: string): Tokens {
                 src[k] === ' '
             ) && src[k] !== '\n'
             ) {
-                console.log(isNumber(src[k] as string), src[k])
                 paragraphText += src[k]
                 k++
             }

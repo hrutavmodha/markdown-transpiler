@@ -2,9 +2,7 @@ import { describe, it, expect } from 'vitest'
 import tokenize from '../src/tokenizer/index.ts'
 
 describe('tokenizer', () => {
-    console.log('Descibe triggered')
     it('should handle headings', () => {
-        console.log('It triggered')
         const markdown = '# Hello World'
         const tokens = tokenize(markdown)
         expect(tokens).toEqual([
@@ -17,5 +15,82 @@ describe('tokenizer', () => {
             },
         ])
     })
-    console.log('It completed')
+
+    it('should handle bold text', () => {
+        const markdown = '**Hello World**'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Bold',
+                metadata: {
+                    text: 'Hello World',
+                },
+            },
+        ])
+    })
+
+    it('should handle italics text', () => {
+        const markdown = '__Hello World__'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Italics',
+                metadata: {
+                    text: 'Hello World',
+                },
+            },
+        ])
+    })
+
+    it('should handle inline code', () => {
+        const markdown = '`Hello World`'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'InlineCode',
+                metadata: {
+                    text: 'Hello World',
+                },
+            },
+        ])
+    })
+
+    it('should handle bold and italics', () => {
+        const markdown = '**__Hello World__**'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Bold',
+                metadata: {
+                    text: '__Hello World__',
+                },
+            },
+        ])
+    })
+
+    it('should handle bold and unordered list', () => {
+        const markdown = '**- Hello World**'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Bold',
+                metadata: {
+                    text: '- Hello World',
+                },
+            },
+        ])
+    })
+
+    it('should handle italics and unordered list', () => {
+        const markdown = '__* Hello World__'
+        const tokens = tokenize(markdown)
+        expect(tokens).toEqual([
+            {
+                type: 'Italics',
+                metadata: {
+                    text: '* Hello World',
+                },
+            },
+        ])
+    })
 })
