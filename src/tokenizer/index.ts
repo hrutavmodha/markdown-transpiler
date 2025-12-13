@@ -8,22 +8,6 @@ export default function tokenize(src: string): Tokens {
     let tokens: Tokens = []
     let i: number = 0
     while (i < src.length) {
-        // Normal Text
-        if (isAlphabet(src[i] as string)) {
-            let paragraph: string = ''
-            let k: number = i
-            while (src[k] !== '\n') {
-                paragraph += src[k]
-                k++
-            }
-            tokens.push({
-                type: 'Paragraph',
-                metadata: {
-                    text: paragraph
-                }
-            })
-            i = k
-        }
         // Heading
         if (src[i] === '#') {
             let level: number = 1
@@ -50,7 +34,7 @@ export default function tokenize(src: string): Tokens {
             i = k
         }
         // Bold
-        if (
+        else if (
             src[i] === '*' &&
             src[i + 1] === '*'
         ) {
@@ -69,7 +53,7 @@ export default function tokenize(src: string): Tokens {
             i = k + 1
         }
         // Italics
-        if (
+        else if (
             src[i] === '_' && 
             src[i + 1] === '_'
          ) {
@@ -87,8 +71,37 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
+        // Code Block
+        else if (isCodeBlock(src[i] as string + src[i + 1] + src[i + 2])) {
+            let language: string = ''
+            let code: string = ''
+            let k: number = i + 3 
+            while (src[k] !== '\n') {
+                language += src[k]
+                k++
+            }
+            while (
+                k < src.length &&
+                !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2]    
+            )) {
+                console.log('K is', k)
+                console.log('Source[k] is', src[k])
+                code += src[k]
+                k++
+            }
+            console.log('Code block is', code)
+            console.log('Language is', language)
+            tokens.push({
+                type: 'CodeBlock', 
+                metadata: {
+                    language: language.trim(),
+                    text: code
+                }
+            })
+            i = k + 2
+        }
         // Inline Code
-        if (src[i] === '`') {
+        else if (src[i] === '`') {
             let k: number = i + 1
             let code: string = ''
             while (src[k] !== '`') {
@@ -103,27 +116,25 @@ export default function tokenize(src: string): Tokens {
             })
             i = k + 1
         }
-        // Code Block
-        else if (isCodeBlock(src[i] as string + src[i + 1] + src[i + 2])) {
-            let language: string = ''
-            let code: string = ''
-            let k: number = i + 2 
-            while (src[k] !== '\n') {
-                language += src[k]
+        // Normal Text
+        else if (isAlphabet(src[i] as string)) {
+            let k: number = i
+            let paragraphText: string = ''
+            while ((
+                isAlphabet(src[k] as string) ||
+                src[k] === ' '
+            ) && src[k] !== '\n'
+            ) {
+                paragraphText += src[k]
                 k++
             }
-            while (isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
-                code += src[k]
-                k++
-            }
+            i = k
             tokens.push({
-                type: 'CodeBlock', 
+                type: 'Paragraph',
                 metadata: {
-                    language: language,
-                    text: code
+                    text: paragraphText
                 }
             })
-            i = k + 1
         }
         i++
     }
