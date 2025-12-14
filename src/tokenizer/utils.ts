@@ -15,3 +15,24 @@ export function isCodeBlock(ch: string): boolean {
 export function isNumber(ch: string): boolean {
     return ch >= '0' && ch <= '9'
 }
+
+export function hasNestedMark(src: string): boolean {
+    let i: number = 0
+    let returnValue: boolean = false
+    while (i < src.length) {
+        // Italics
+        if (src[i] === '_' && src[i + 1] === '_') {
+            returnValue = true
+        } 
+        // Bold
+        else if (src[i] === '*' && src[i + 1] === '*') {
+            returnValue = true
+        }
+        // Inline code
+        else if (src[i] === '`') {
+            returnValue = true
+        }
+        i++
+    }
+    return returnValue
+}

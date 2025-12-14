@@ -1,7 +1,7 @@
 type Token = {
     type: string,
-    lexeme?: string,
-    metadata: { [key: string]: any }
+    metadata?: { [key: string]: any },
+    children?: Array<Token> | Array<string> | Array<number>
 }
 
 export type Tokens = Array<Token>

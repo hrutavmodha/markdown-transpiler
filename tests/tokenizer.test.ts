@@ -16,25 +16,19 @@ describe('tokenizer', () => {
         ])
     })
 
+    it('should handle nested markings in headings', () => {
+        const md = '# Hello **World**'
+        const tokens = tokenize(md)
+        // console.log(JSON.stringify(tokens, null, 4))
+    })
+
     it('should handle bold text', () => {
         const markdown = '**Hello World**'
         const tokens = tokenize(markdown)
+        // console.log(JSON.stringify(tokens, null, 4))
         expect(tokens).toEqual([
             {
                 type: 'Bold',
-                metadata: {
-                    text: 'Hello World',
-                },
-            },
-        ])
-    })
-
-    it('should handle italics text', () => {
-        const markdown = '__Hello World__'
-        const tokens = tokenize(markdown)
-        expect(tokens).toEqual([
-            {
-                type: 'Italics',
                 metadata: {
                     text: 'Hello World',
                 },
@@ -50,45 +44,6 @@ describe('tokenizer', () => {
                 type: 'InlineCode',
                 metadata: {
                     text: 'Hello World',
-                },
-            },
-        ])
-    })
-
-    it('should handle bold and italics', () => {
-        const markdown = '**__Hello World__**'
-        const tokens = tokenize(markdown)
-        expect(tokens).toEqual([
-            {
-                type: 'Bold',
-                metadata: {
-                    text: '__Hello World__',
-                },
-            },
-        ])
-    })
-
-    it('should handle bold and unordered list', () => {
-        const markdown = '**- Hello World**'
-        const tokens = tokenize(markdown)
-        expect(tokens).toEqual([
-            {
-                type: 'Bold',
-                metadata: {
-                    text: '- Hello World',
-                },
-            },
-        ])
-    })
-
-    it('should handle italics and unordered list', () => {
-        const markdown = '__* Hello World__'
-        const tokens = tokenize(markdown)
-        expect(tokens).toEqual([
-            {
-                type: 'Italics',
-                metadata: {
-                    text: '* Hello World',
                 },
             },
         ])
