@@ -9,4 +9,4 @@ export default function transpile(src: string) {
     return htmlStr
 }
 
-transpile('# **Hello __World__**')
+transpile('# __Hello World__')
