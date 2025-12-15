@@ -7,11 +7,22 @@ export default function generate(tokens: Nodes): string {
         const token = tokens[i]
         switch (token?.type) {
             case 'Heading':
-                htmlStr += `<h${token.metadata?.level}>${token.children?.length === 1 ? token.children : generate(token?.children as Nodes)}</h${token.metadata?.level}>`
+                console.log(token.children)
+                console.log(typeof token.children?.[0] === 'object')
+                htmlStr += `<h${token.metadata?.level}>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</h${token.metadata?.level}>`
+                break
             case 'Italics':
-                htmlStr += `<i>${token.children?.length === 1 ? token.children : generate(token?.children as Nodes)}</i>`
+                console.log(token.children)
+                htmlStr += `<i>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</i>`
+                break
             case 'Bold':
-                htmlStr += `<em>${token.children?.length === 1 ? token.children : generate(token?.children as Nodes)}</em>`
+                console.log(token.children)
+                htmlStr += `<b>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</b>`
+                break
+            case 'Text': 
+                console.log(token.children)
+                htmlStr += token.children?.[0]
+                break
         }
         i++
     }
