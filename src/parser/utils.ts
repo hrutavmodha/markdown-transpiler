@@ -8,6 +8,11 @@ export function isAlphabet(ch: string): boolean {
     )
 } 
 
+export function isTextCharacter(ch: string): boolean {
+    const specialChars = ['#', '*', '_', '`', '-'];
+    return !specialChars.includes(ch);
+}
+
 export function isCodeBlock(ch: string): boolean {
     return ch === '```'
 }

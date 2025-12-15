@@ -119,4 +119,64 @@ describe('Parser', () => {
             }
         ])
     })
+
+    it('should handle more complex edge cases', () => {
+        expect(parse('__unclosed italics')).toEqual([
+            {
+                type: 'Text',
+                children: ['__unclosed italics']
+            }
+        ]);
+
+        
+        expect(parse('**unclosed bold')).toEqual([
+            {
+                type: 'Text',
+                children: ['**unclosed bold']
+            }
+        ]);
+
+        
+        expect(parse('#no-space-heading')).toEqual([
+            {
+                type: 'Text',
+                children: ['#no-space-heading']
+            }
+        ]);
+
+        
+        expect(parse('####### heading')).toEqual([
+            {
+                type: 'Heading',
+                metadata: {
+                    level: 7
+                },
+                children: ['heading']
+            }
+        ]);
+
+        
+        expect(parse('plain text and **bold**')).toEqual([
+            {
+                type: 'Text',
+                children: ['plain text and ']
+            },
+            {
+                type: 'Bold',
+                children: ['bold']
+            }
+        ]);
+
+        
+        expect(parse('text with !@#$ special chars')).toEqual([
+            {
+                type: 'Text',
+                children: ['text with !@']
+            },
+            {
+                type: 'Text',
+                children: ['#$ special chars']
+            }
+        ]);
+    });
 })

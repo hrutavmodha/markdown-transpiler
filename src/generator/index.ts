@@ -1,10 +1,10 @@
 import type { Nodes } from '../../types/token.d.ts'
-import { handleList } from './utils.ts'
+
 export default function generate(tokens: Nodes): string {
     let htmlStr: string = ''
-    
     let i: number = 0
-
+    let insideUl: boolean = false
+    
     while (i < tokens.length) {
         const token = tokens[i]
 
@@ -25,8 +25,26 @@ export default function generate(tokens: Nodes): string {
                 htmlStr += `<pre><code>${token.children?.[0]}</code></pre>`
                 break
             case 'UnorderedListCircle':
-                const listStr = handleList(token)
-                htmlStr += listStr
+                if (!insideUl) {
+                    htmlStr += '<ul type="circle">'
+                    insideUl = true
+                }
+                htmlStr += `<li>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</li>`
+                if (tokens[i + 1]?.type !== 'UnorderedListCircle') {
+                    htmlStr += '</ul>'
+                    insideUl = false
+                }
+                break
+            case 'UnorderedListDisc':
+                if (!insideUl) {
+                    htmlStr += '<ul type="disc">'
+                    insideUl = true
+                }
+                htmlStr += `<li>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</li>`
+                if (tokens[i + 1]?.type !== 'UnorderedListDisc') {
+                    htmlStr += '</ul>'
+                    insideUl = false
+                }
                 break
             case 'Text':
                 htmlStr += token.children?.[0]

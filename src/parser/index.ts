@@ -1,6 +1,6 @@
 import type { Nodes } from '../../types/token.js'
 import {
-    isAlphabet,
+    isTextCharacter,
     isCodeBlock,
     isNumber,
     hasNestedMark
@@ -13,35 +13,47 @@ export default function parse(src: string): Nodes {
     while (i < src.length) {
         // Headings
         if (src[i] === '#') {
-            let level: number = 1
-            let headingText: string = ''
-            let k: number = i + 1
-            let childNodes: Nodes = []
-            while (
-                k < src.length &&
-                src[k] !== ' '
-            ) {
-                level++
-                k++
+            let level: number = 0;
+            let k: number = i;
+            while (k < src.length && src[k] === '#') {
+                level++;
+                k++;
             }
-            while (
-                k < src.length &&
-                src[k] !== '\n'
-            ) {
-                headingText += src[k]
-                k++
+
+            if (k < src.length && src[k] === ' ') {
+                k++;
+                let headingText: string = ''
+                let childNodes: Nodes = []
+                while (
+                    k < src.length &&
+                    src[k] !== '\n'
+                ) {
+                    headingText += src[k]
+                    k++
+                }
+                if (hasNestedMark(headingText)) {
+                    childNodes = parse(headingText)
+                }
+                Nodes.push({
+                    type: 'Heading',
+                    metadata: {
+                        level: level
+                    },
+                    children: childNodes.length === 0 ? [headingText.trim()] : childNodes
+                })
+                i = k
+            } else {
+                let text: string = ''
+                while (i < src.length && src[i] !== '\n') {
+                    text += src[i]
+                    i++
+                }
+                Nodes.push({
+                    type: 'Text',
+                    children: [text]
+                })
+                i--
             }
-            if (hasNestedMark(headingText)) {
-                childNodes = parse(headingText)
-            }
-            Nodes.push({
-                type: 'Heading',
-                metadata: {
-                    level: level
-                },
-                children: childNodes.length === 0 ? [headingText.trim()] : childNodes
-            })
-            i = k
         }
         // Bold
         else if (
@@ -49,25 +61,34 @@ export default function parse(src: string): Nodes {
             src[i + 1] === '*'
         ) {
             let k: number = i + 2
-            let childNodes: Nodes = []
             let boldText: string = ''
-            while (
-                k < src.length &&
-                src[k] !== '*' &&
-                src[k + 1] !== '*'
-            ) {
+            let closingTagFound: boolean = false
+            while (k < src.length) {
+                if (src[k] === '*' && src[k + 1] === '*') {
+                    closingTagFound = true
+                    break
+                }
                 boldText += src[k]
                 k++
             }
-            boldText += src[k]
-            if (hasNestedMark(boldText)) {
-                childNodes = parse(boldText)
+
+            if (closingTagFound) {
+                let childNodes: Nodes = []
+                if (hasNestedMark(boldText)) {
+                    childNodes = parse(boldText)
+                }
+                Nodes.push({
+                    type: 'Bold',
+                    children: childNodes.length === 0 ? [boldText] : childNodes
+                })
+                i = k + 1
+            } else {
+                Nodes.push({
+                    type: 'Text',
+                    children: [src.substring(i, src.length)]
+                })
+                i = src.length - 1
             }
-            Nodes.push({
-                type: 'Bold',
-                children: childNodes.length === 0 ? [boldText] : childNodes
-            })
-            i = k + 1
         }
         // Italics
         else if (
@@ -75,25 +96,34 @@ export default function parse(src: string): Nodes {
             src[i + 1] === '_'
         ) {
             let k: number = i + 2
-            let childNodes: Nodes = []
             let italicsText: string = ''
-            while (
-                k < src.length &&
-                src[k] !== '_' &&
-                src[k + 1] !== '_'
-            ) {
+            let closingTagFound: boolean = false
+            while (k < src.length) {
+                if (src[k] === '_' && src[k + 1] === '_') {
+                    closingTagFound = true
+                    break
+                }
                 italicsText += src[k]
                 k++
             }
-            italicsText += src[k]
-            if (hasNestedMark(italicsText)) {
-                childNodes = parse(italicsText)
+
+            if (closingTagFound) {
+                let childNodes: Nodes = []
+                if (hasNestedMark(italicsText)) {
+                    childNodes = parse(italicsText)
+                }
+                Nodes.push({
+                    type: 'Italics',
+                    children: childNodes.length === 0 ? [italicsText] : childNodes
+                })
+                i = k + 1
+            } else {
+                Nodes.push({
+                    type: 'Text',
+                    children: [src.substring(i, src.length)]
+                })
+                i = src.length - 1
             }
-            Nodes.push({
-                type: 'Italics',
-                children: childNodes.length === 0 ? [italicsText] : childNodes
-            })
-            i = k + 1
         }
         // Code Block
         else if (isCodeBlock(src[i] as string + src[i + 1] + src[i + 2])) {
@@ -166,6 +196,7 @@ export default function parse(src: string): Nodes {
         // Unordered List - Disc 
         else if (
             src[i] === '*' &&
+            src[i - 1] !== '*' &&
             src[i + 1] === ' '
         ) {
             let k: number = i + 1
@@ -186,16 +217,14 @@ export default function parse(src: string): Nodes {
             i = k + 1
         }
         // Normal Text
-        else if (isAlphabet(src[i] as string)) {
+        else {
             let k: number = i
             let paragraphText: string = ''
             let childNodes: Nodes = []
             while (
-                k < src.length && (
-                isAlphabet(src[k] as string) ||
-                isNumber(src[k] as string) ||
-                src[k] === ' '
-            ) && src[k] !== '\n'
+                k < src.length &&
+                src[k] !== '\n' &&
+                isTextCharacter(src[k] as string)
             ) {
                 paragraphText += src[k]
                 k++
@@ -209,7 +238,7 @@ export default function parse(src: string): Nodes {
             })
             i = k - 1
         }
-        // TODO: Add parsing for tables
+        // TODO: Add tokenization for tables
         i++
     }
     return Nodes
