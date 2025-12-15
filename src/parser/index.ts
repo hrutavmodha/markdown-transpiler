@@ -1,4 +1,4 @@
-import type { Tokens } from '../../types/token.d.ts'
+import type { Nodes } from '../../types/token.js'
 import {
     isAlphabet,
     isCodeBlock,
@@ -6,8 +6,8 @@ import {
     hasNestedMark
 } from './utils.ts'
 
-export default function tokenize(src: string): Tokens {
-    let tokens: Tokens = []
+export default function parse(src: string): Nodes {
+    let Nodes: Nodes = []
     let i: number = 0
     
     while (i < src.length) {
@@ -16,24 +16,30 @@ export default function tokenize(src: string): Tokens {
             let level: number = 1
             let headingText: string = ''
             let k: number = i + 1
-            let childTokens: Tokens = []
-            while (src[k] !== ' ') {
+            let childNodes: Nodes = []
+            while (
+                k < src.length &&
+                src[k] !== ' '
+            ) {
                 level++
                 k++
             }
-            while (k < src.length && src[k] !== '\n') {
+            while (
+                k < src.length &&
+                src[k] !== '\n'
+            ) {
                 headingText += src[k]
                 k++
             }
             if (hasNestedMark(headingText)) {
-                childTokens = tokenize(headingText)
+                childNodes = parse(headingText)
             }
-            tokens.push({
+            Nodes.push({
                 type: 'Heading',
                 metadata: {
                     level: level
                 },
-                children: childTokens.length === 0 ? [headingText] : childTokens
+                children: childNodes.length === 0 ? [headingText.trim()] : childNodes
             })
             i = k
         }
@@ -43,9 +49,10 @@ export default function tokenize(src: string): Tokens {
             src[i + 1] === '*'
         ) {
             let k: number = i + 2
-            let childTokens: Tokens = []
+            let childNodes: Nodes = []
             let boldText: string = ''
             while (
+                k < src.length &&
                 src[k] !== '*' &&
                 src[k + 1] !== '*'
             ) {
@@ -54,11 +61,11 @@ export default function tokenize(src: string): Tokens {
             }
             boldText += src[k]
             if (hasNestedMark(boldText)) {
-                childTokens = tokenize(boldText)
+                childNodes = parse(boldText)
             }
-            tokens.push({
+            Nodes.push({
                 type: 'Bold',
-                children: childTokens.length === 0 ? [boldText] : childTokens
+                children: childNodes.length === 0 ? [boldText] : childNodes
             })
             i = k + 1
         }
@@ -68,9 +75,10 @@ export default function tokenize(src: string): Tokens {
             src[i + 1] === '_'
         ) {
             let k: number = i + 2
-            let childTokens: Tokens = []
+            let childNodes: Nodes = []
             let italicsText: string = ''
             while (
+                k < src.length &&
                 src[k] !== '_' &&
                 src[k + 1] !== '_'
             ) {
@@ -79,11 +87,11 @@ export default function tokenize(src: string): Tokens {
             }
             italicsText += src[k]
             if (hasNestedMark(italicsText)) {
-                childTokens = tokenize(italicsText)
+                childNodes = parse(italicsText)
             }
-            tokens.push({
+            Nodes.push({
                 type: 'Italics',
-                children: childTokens.length === 0 ? [italicsText] : childTokens
+                children: childNodes.length === 0 ? [italicsText] : childNodes
             })
             i = k + 1
         }
@@ -92,20 +100,26 @@ export default function tokenize(src: string): Tokens {
             let language: string = ''
             let code: string = ''
             let k: number = i + 3
-            while (src[k] !== '\n') {
+            while (
+                k < src.length &&
+                src[k] !== '\n'
+            ) {
                 language += src[k]
                 k++
             }
-            while (!isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
+            while (
+                k < src.length &&
+                !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])
+            ) {
                 code += src[k]
                 k++
             }
-            tokens.push({
+            Nodes.push({
                 type: 'CodeBlock',
                 metadata: {
                     language: language.trim(),
-                    text: code
-                }
+                },
+                children: [code]
             })
             i = k + 2
         }
@@ -113,38 +127,39 @@ export default function tokenize(src: string): Tokens {
         else if (src[i] === '`') {
             let k: number = i + 1
             let code: string = ''
-            while (src[k] !== '`') {
+            while (
+                k < src.length &&
+                src[k] !== '`'
+            ) {
                 code += src[k]
                 k++
             }
-            tokens.push({
+            Nodes.push({
                 type: 'InlineCode',
-                metadata: {
-                    text: code
-                }
+                children: [code]
             })
             i = k + 1
         }
         // Unordered List - Circle
-        else if (src[i] === '-') {
+        else if (
+            src[i] === '-' &&
+            src[i + 1] === ' '
+        ) {
             let k: number = i + 1
-            let childTokens: Tokens = []
+            let childNodes: Nodes = []
             let list: string = ''
-            while ((
-                isAlphabet(src[k] as string) ||
-                isNumber(src[k] as string) ||
-                src[k] === ' '
-            ) && src[k] !== '\n'
+            while (
+                k < src.length && src[k] !== '\n'
             ) {
                 list += src[k]
                 k++
             }
             if (hasNestedMark(list)) {
-                childTokens = tokenize(list)
+                childNodes = parse(list)
             }
-            tokens.push({
+            Nodes.push({
                 type: 'UnorderedListCircle',
-                children: childTokens.length === 0 ? [list] : childTokens
+                children: childNodes.length === 0 ? [list] : childNodes
             })
             i = k + 1
         }
@@ -155,22 +170,18 @@ export default function tokenize(src: string): Tokens {
         ) {
             let k: number = i + 1
             let list: string = ''
-            let childTokens: Tokens = []
-            while ((
-                isAlphabet(src[k] as string) ||
-                isNumber(src[k] as string) ||
-                src[k] === ' '
-            ) && src[k] !== '\n'
-            ) {
+            let childNodes: Nodes = []
+            while (
+                k < src.length && src[k] !== '\n') {
                 list += src[k]
                 k++
             }
             if (hasNestedMark(list)) {
-                childTokens = tokenize(list)
+                childNodes = parse(list)
             }
-            tokens.push({
+            Nodes.push({
                 type: 'UnorderedListDisc',
-                children: childTokens.length === 0 ? [list] : childTokens
+                children: childNodes.length === 0 ? [list] : childNodes
             })
             i = k + 1
         }
@@ -178,8 +189,9 @@ export default function tokenize(src: string): Tokens {
         else if (isAlphabet(src[i] as string)) {
             let k: number = i
             let paragraphText: string = ''
-            let childTokens: Tokens = []
-            while ((
+            let childNodes: Nodes = []
+            while (
+                k < src.length && (
                 isAlphabet(src[k] as string) ||
                 isNumber(src[k] as string) ||
                 src[k] === ' '
@@ -189,22 +201,16 @@ export default function tokenize(src: string): Tokens {
                 k++
             }
             if (hasNestedMark(paragraphText)) {
-                childTokens = tokenize(paragraphText)
+                childNodes = parse(paragraphText)
             }
-            tokens.push({
-                type: 'Paragraph',
-                children: childTokens.length === 0 ? [paragraphText] : childTokens
+            Nodes.push({
+                type: 'Text',
+                children: childNodes.length === 0 ? [paragraphText] : childNodes
             })
             i = k - 1
         }
-        else {
-            console.log(`'${src[i]}'`)
-        }
+        // TODO: Add parsing for tables
         i++
     }
-    return tokens
+    return Nodes
 }
-
-const md = '# Hello **World__**'
-const tokens = tokenize(md)
-console.log(JSON.stringify(tokens, null, 4))

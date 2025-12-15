@@ -1,7 +1,7 @@
-type Token = {
+type Node = {
     type: string,
     metadata?: { [key: string]: any },
     children?: Array<Token> | Array<string> | Array<number>
 }
 
-export type Tokens = Array<Token>
+export type Nodes = Array<Node>

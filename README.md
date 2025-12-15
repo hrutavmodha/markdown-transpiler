@@ -1,10 +1,10 @@
-# Markdown Compiler
+# Markdown Transpiler
 
-This is a simple Markdown compiler written in TypeScript. It takes a Markdown string as input and outputs a series of tokens.
+This is a simple Markdown transpiler written in TypeScript. It takes a Markdown string as input and outputs a series of tokens.
 
 ## Features
 
-- **Tokenizer:** The compiler can tokenize the following Markdown syntax:
+- **Tokenizer:** The transpiler can tokenize the following Markdown syntax:
   - Headings (`#`)
   - Bold (`**`)
   - Italics (`__`)
@@ -30,7 +30,6 @@ The project is organized as follows:
     └── token.d.ts
 ```
 
-- `src/tokenizer`: Contains the tokenizer logic.
 - `src/parser`: (Currently empty) This will contain the parser that takes the tokens and generates an Abstract Syntax Tree (AST) or HTML.
 - `tests`: Contains the tests for the tokenizer.
 - `types`: Contains the type definitions for the tokens.
