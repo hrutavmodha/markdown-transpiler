@@ -73,7 +73,7 @@ The project is organized to clearly separate concerns:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/markdown-transpiler.git
+    git clone https://github.com/hrutav-modha/markdown-transpiler.git
     ```
 2.  Navigate to the project directory and install the dependencies:
     ```bash
