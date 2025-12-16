@@ -217,4 +217,13 @@ describe('Parser', () => {
             }
         ]);
     });
+
+    it('should parse broken link syntax as text', () => {
+        expect(parse('[incomplete link')).toEqual([
+            {
+                type: 'Text',
+                children: ['[incomplete link']
+            }
+        ]);
+    });
 })

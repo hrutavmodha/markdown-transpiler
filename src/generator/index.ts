@@ -46,6 +46,9 @@ export default function generate(tokens: Nodes): string {
                     insideUl = false
                 }
                 break
+            case 'Link':
+                htmlStr += `<a href="${token.metadata?.href}">${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</a>`
+                break
             case 'Text':
                 htmlStr += token.children?.[0]
                 break

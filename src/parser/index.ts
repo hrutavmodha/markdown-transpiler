@@ -238,42 +238,62 @@ export default function parse(src: string): Nodes {
         }
         // Links
         else if (src[i] === '[') {
-            let k: number = i + 1
-            let linkStr: string = ''
-            let urlStr: string = ''
-            let j: number
-            let childNodes: Nodes = []
-            while (
-                k < src.length &&
-                src[k] !== ']'
-            ) {
-                linkStr += src[k]
-                k++
-            }
-            j = k + 1
-            if (src[j] === '(') {
-                while (src[j + 1] !== ')') {
-                    urlStr += src[j + 1]
-                    j++
+            let k: number = i + 1;
+            let linkTextEnd: number = -1;
+
+            while (k < src.length) {
+                if (src[k] === ']') {
+                    linkTextEnd = k;
+                    break;
                 }
-                if (hasNestedMark(linkStr)) {
-                    childNodes = parse(linkStr)
-                }
-                nodes.push({
-                    type: 'Link',
-                    metadata: {
-                        href: urlStr
-                    },
-                    children: childNodes.length === 0 ? [linkStr] : childNodes
-                })
-                i = j
+                k++;
             }
-            else {
+
+            if (linkTextEnd !== -1 && src[linkTextEnd + 1] === '(') {
+                let urlStart: number = linkTextEnd + 2;
+                let urlEnd: number = -1;
+                k = urlStart;
+
+                while (k < src.length) {
+                    if (src[k] === ')') {
+                        urlEnd = k;
+                        break;
+                    }
+                    k++;
+                }
+
+                if (urlEnd !== -1) {
+                    const linkStr: string = src.substring(i + 1, linkTextEnd);
+                    const urlStr: string = src.substring(urlStart, urlEnd);
+                    let childNodes: Nodes = [];
+
+                    if (hasNestedMark(linkStr)) {
+                        childNodes = parse(linkStr);
+                    }
+
+                    nodes.push({
+                        type: 'Link',
+                        metadata: {
+                            href: urlStr
+                        },
+                        children: childNodes.length === 0 ? [linkStr] : childNodes
+                    });
+                    i = urlEnd;
+                } else {
+                    let text: string = src.substring(i, k);
+                    nodes.push({
+                        type: 'Text',
+                        children: [text]
+                    });
+                    i = k - 1;
+                }
+            } else {
+                let text: string = src.substring(i, k);
                 nodes.push({
                     type: 'Text',
-                    children: [linkStr]
-                })
-                i = k
+                    children: [text]
+                });
+                i = k - 1;
             }
         }    
         // Normal Text
