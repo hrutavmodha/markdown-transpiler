@@ -238,7 +238,6 @@ export default function parse(src: string): Nodes {
         }
         // Links
         else if (src[i] === '[') {
-            console.log('Condition matched')
             let k: number = i + 1
             let linkStr: string = ''
             let urlStr: string = ''
@@ -251,15 +250,12 @@ export default function parse(src: string): Nodes {
                 linkStr += src[k]
                 k++
             }
-            console.log('Link Str is', linkStr)
             j = k + 1
-            console.log('Source[j] is', src[j])
             if (src[j] === '(') {
                 while (src[j + 1] !== ')') {
                     urlStr += src[j + 1]
                     j++
                 }
-                console.log('Url Str is', urlStr)
                 if (hasNestedMark(linkStr)) {
                     childNodes = parse(linkStr)
                 }
