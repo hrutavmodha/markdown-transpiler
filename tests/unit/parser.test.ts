@@ -169,5 +169,52 @@ describe('Parser', () => {
                 children: ['text with !@#$ special chars']
             }
         ]);
+
+        expect(parse('`unclosed code')).toEqual([
+            {
+                type: 'Text',
+                children: ['`unclosed code']
+            }
+        ]);
+
+        expect(parse('```js\nconsole.log("Hello World")')).toEqual([
+            {
+                type: 'Text',
+                children: ['```js\nconsole.log("Hello World")']
+            }
+        ]);
+    });
+
+    it('should parse links', () => {
+        const ast = parse('[My Link](https://example.com)')
+        console.log(JSON.stringify(ast, null, 4))
+        expect(ast).toEqual([
+            {
+                type: 'Link',
+                metadata: {
+                    href: 'https://example.com'
+                },
+                children: ['My Link']
+            }
+        ]);
+    });
+
+    it('should parse links with nested markdown', () => {
+        const ast = parse('[**My Bold Link**](https://example.com)')
+        console.log(JSON.stringify(ast, null, 4))
+        expect(ast).toEqual([
+            {
+                type: 'Link',
+                metadata: {
+                    href: 'https://example.com'
+                },
+                children: [
+                    {
+                        type: 'Bold',
+                        children: ['My Bold Link']
+                    }
+                ]
+            }
+        ]);
     });
 })

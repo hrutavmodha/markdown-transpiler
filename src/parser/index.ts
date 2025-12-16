@@ -9,6 +9,7 @@ import {
 export default function parse(src: string): Nodes {
     let nodes: Nodes = []
     let i: number = 0
+    
     while (i < src.length) {
         // Headings
         if (src[i] === '#' && (src[i - 1] === '\n' || src[i - 1] == undefined)) {
@@ -126,9 +127,8 @@ export default function parse(src: string): Nodes {
         }
         // Code Block
         else if (isCodeBlock(src[i] as string + src[i + 1] + src[i + 2])) {
-            let language: string = ''
-            let code: string = ''
             let k: number = i + 3
+            let language: string = ''
             while (
                 k < src.length &&
                 src[k] !== '\n'
@@ -136,21 +136,33 @@ export default function parse(src: string): Nodes {
                 language += src[k]
                 k++
             }
+
+            let codeStart = k;
             while (
                 k < src.length &&
                 !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])
             ) {
-                code += src[k]
                 k++
             }
-            nodes.push({
-                type: 'CodeBlock',
-                metadata: {
-                    language: language.trim(),
-                },
-                children: [code]
-            })
-            i = k + 2
+
+            if (k < src.length && isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
+                let code: string = src.substring(codeStart, k);
+                nodes.push({
+                    type: 'CodeBlock',
+                    metadata: {
+                        language: language.trim(),
+                    },
+                    children: [code]
+                })
+                i = k + 2
+            } else {
+                let textContent: string = src.substring(i, k);
+                nodes.push({
+                    type: 'Text',
+                    children: [textContent]
+                })
+                i = k - 1
+            }
         }
         // Inline Code
         else if (src[i] === '`') {
@@ -163,11 +175,20 @@ export default function parse(src: string): Nodes {
                 code += src[k]
                 k++
             }
-            nodes.push({
-                type: 'InlineCode',
-                children: [code]
-            })
-            i = k + 1
+
+            if (k < src.length && src[k] === '`') {
+                nodes.push({
+                    type: 'InlineCode',
+                    children: [code]
+                })
+                i = k
+            } else {
+                nodes.push({
+                    type: 'Text',
+                    children: ['`' + code]
+                })
+                i = k - 1
+            }
         }
         // Unordered List - Circle
         else if (
@@ -215,6 +236,50 @@ export default function parse(src: string): Nodes {
             })
             i = k + 1
         }
+        // Links
+        else if (src[i] === '[') {
+            console.log('Condition matched')
+            let k: number = i + 1
+            let linkStr: string = ''
+            let urlStr: string = ''
+            let j: number
+            let childNodes: Nodes = []
+            while (
+                k < src.length &&
+                src[k] !== ']'
+            ) {
+                linkStr += src[k]
+                k++
+            }
+            console.log('Link Str is', linkStr)
+            j = k + 1
+            console.log('Source[j] is', src[j])
+            if (src[j] === '(') {
+                while (src[j + 1] !== ')') {
+                    urlStr += src[j + 1]
+                    j++
+                }
+                console.log('Url Str is', urlStr)
+                if (hasNestedMark(linkStr)) {
+                    childNodes = parse(linkStr)
+                }
+                nodes.push({
+                    type: 'Link',
+                    metadata: {
+                        href: urlStr
+                    },
+                    children: childNodes.length === 0 ? [linkStr] : childNodes
+                })
+                i = j
+            }
+            else {
+                nodes.push({
+                    type: 'Text',
+                    children: [linkStr]
+                })
+                i = k
+            }
+        }    
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i
