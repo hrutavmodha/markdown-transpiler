@@ -220,14 +220,10 @@ export default function parse(src: string): Nodes {
             let k: number = i
             let text: string = ''
             let childNodes: Nodes = []
-            while (k < src.length && isTextCharacter(src[k] as string)) {
+            while (k < src.length && src[k] !== '\n' && isTextCharacter(src[k] as string)) {
                 text += src[k]
                 k++
             }
-            for (let j: number = 0; j < text.length; j++) {
-                console.log(`"${text[j]}"`)
-            }
-
             nodes.push({
                 type: 'Text',
                 children: childNodes.length === 0 ? [text] : childNodes

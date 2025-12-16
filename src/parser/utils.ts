@@ -9,7 +9,7 @@ export function isAlphabet(ch: string): boolean {
 }
 
 export function isTextCharacter(ch: string): boolean {
-    const specialChars = ['#', '*', '_', '`', '-']
+    const specialChars = ['*', '_', '`', '-']
     return !specialChars.includes(ch)
 }
 

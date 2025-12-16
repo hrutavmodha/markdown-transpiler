@@ -25,7 +25,7 @@ describe('compiler', () => {
 
     it('should transpile a mix of headings and paragraphs', () => {
         const markdown = '# Title\nThis is a paragraph\n## Subtitle\nAnother paragraph.'
-        const expectedHtml = '<h1>Title</h1>This is a paragraph\n<h2>Subtitle</h2>Another paragraph.'
+        const expectedHtml = '<h1>Title</h1>This is a paragraph<h2>Subtitle</h2>Another paragraph.'
         const actualHtml = transpile(markdown)
         expect(actualHtml).toBe(expectedHtml)
     })
@@ -69,7 +69,6 @@ describe('compiler', () => {
         const markdown = ' * Item A\n * Item B'
         const expectedHtml = '<ul type="disc"><li> Item A</li><li> Item B</li></ul>'
         const actualHtml = transpile(markdown)
-        console.log(`'${actualHtml}'`)
         expect(actualHtml).toBe(expectedHtml)
     })
    
