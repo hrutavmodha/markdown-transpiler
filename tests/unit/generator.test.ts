@@ -138,4 +138,17 @@ console.log("Hello World")
         ]
         expect(generate(nodes)).toBe('This is some <b>bold text</b> and some <i>italic text</i>.')
     })
+
+    it('should generate a link from a link node', () => {
+        const nodes: Nodes = [
+            {
+                type: 'Link',
+                metadata: {
+                    href: 'https://example.com'
+                },
+                children: ['My Link']
+            }
+        ]
+        expect(generate(nodes)).toBe('<a href="https://example.com">My Link</a>')
+    })
 });
