@@ -5,12 +5,12 @@ export function isAlphabet(ch: string): boolean {
     ) || (
         ch >= 'a' &&
         ch <= 'z'
-    )
-} 
+    ) || ch === ' '
+}
 
 export function isTextCharacter(ch: string): boolean {
-    const specialChars = ['#', '*', '_', '`', '-'];
-    return !specialChars.includes(ch);
+    const specialChars = ['# ', '*', '_', '`', '-']
+    return !specialChars.includes(ch)
 }
 
 export function isCodeBlock(ch: string): boolean {
@@ -28,13 +28,17 @@ export function hasNestedMark(src: string): boolean {
         // Italics
         if (src[i] === '_' && src[i + 1] === '_') {
             returnValue = true
-        } 
+        }
         // Bold
         else if (src[i] === '*' && src[i + 1] === '*') {
             returnValue = true
         }
         // Inline code
         else if (src[i] === '`') {
+            returnValue = true
+        }
+        // Headings
+        else if (src[i] === '#' && src[i - 1] === '\n') {
             returnValue = true
         }
         i++
