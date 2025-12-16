@@ -9,13 +9,12 @@ import {
 export default function parse(src: string): Nodes {
     let nodes: Nodes = []
     let i: number = 0
-    console.log(`Source String received is '${src}'`)
     while (i < src.length) {
         // Headings
-        if (src[i] === '#') {
+        if (src[i] === '#' && (src[i - 1] === '\n' || src[i - 1] == undefined)) {
             let level: number = 0
             let k: number = i
-            while (k < src.length && src[k] === '#') {
+            while (k < src.length && src[k] !== ' ') {
                 level++
                 k++
             }
@@ -217,7 +216,7 @@ export default function parse(src: string): Nodes {
             i = k + 1
         }
         // Normal Text
-        else if (isTextCharacter(src[i] as string)) {
+        else if (isAlphabet(src[i] as string)) {
             let k: number = i
             let text: string = ''
             let childNodes: Nodes = []
@@ -225,11 +224,10 @@ export default function parse(src: string): Nodes {
                 text += src[k]
                 k++
             }
-            if (hasNestedMark(text)) {
-                childNodes = parse(text)
+            for (let j: number = 0; j < text.length; j++) {
+                console.log(`"${text[j]}"`)
             }
 
-            console.log(text)
             nodes.push({
                 type: 'Text',
                 children: childNodes.length === 0 ? [text] : childNodes

@@ -5,11 +5,11 @@ export function isAlphabet(ch: string): boolean {
     ) || (
         ch >= 'a' &&
         ch <= 'z'
-    ) || ch === ' '
+    )
 }
 
 export function isTextCharacter(ch: string): boolean {
-    const specialChars = ['# ', '*', '_', '`', '-']
+    const specialChars = ['#', '*', '_', '`', '-']
     return !specialChars.includes(ch)
 }
 
@@ -35,10 +35,6 @@ export function hasNestedMark(src: string): boolean {
         }
         // Inline code
         else if (src[i] === '`') {
-            returnValue = true
-        }
-        // Headings
-        else if (src[i] === '#' && src[i - 1] === '\n') {
             returnValue = true
         }
         i++
