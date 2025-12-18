@@ -11,5 +11,3 @@ export default function transpile(src: string, debug: boolean) {
     }
     return htmlStr
 }
-
-transpile('> **Note:** __This is nested blockQuote__', true)
