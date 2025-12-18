@@ -151,4 +151,26 @@ console.log("Hello World")
         ]
         expect(generate(nodes)).toBe('<a href="https://example.com">My Link</a>')
     })
+
+    it('should generate blockquote', () => {
+        const nodes: Nodes = [{
+            type: 'BlockQuote',
+            children: ['Note: This is a normal blockquote']
+        }]
+        expect(generate(nodes)).toBe('<blockquote>Note: This is a normal blockquote</blockquote>')
+    })
+
+    it('should generate nested HTML for nested markdowned blockquote', () => {
+        const nodes: Nodes = [{
+            type: 'BlockQuote',
+            children: [{
+                type: 'Bold',
+                children: ['Note:']
+            }, {
+                type: 'Italics',
+                children: ['This is italics text in blockquote']
+            }]
+        }]
+        expect(generate(nodes)).toBe('<blockquote><b>Note:</b><i>This is italics text in blockquote</i></blockquote>')
+    })
 });

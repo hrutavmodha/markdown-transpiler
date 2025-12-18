@@ -295,7 +295,35 @@ export default function parse(src: string): Nodes {
                 });
                 i = k - 1;
             }
-        }    
+        }  
+        // Block Quotes
+        else if (
+            src[i] === '>' &&
+            src[i + 1] === ' ' && (
+                src[i - 1] === '\n' ||
+                src[i - 1] === '' ||
+                src[i - 1] == undefined
+            )
+        ) {
+            let k: number = i + 2
+            let blockQuoteStr: string = ''
+            let childNodes: Nodes = []
+            while (
+                k < src.length &&
+                src[k] !== '\n'
+            ) {
+                blockQuoteStr += src[k]
+                k++
+            }
+            if (hasNestedMark(blockQuoteStr)) {
+                childNodes = parse(blockQuoteStr)
+            }
+            i = k + 1
+            nodes.push({
+                type: 'BlockQuote',
+                children: childNodes.length === 0 ? [blockQuoteStr] : childNodes
+            })
+        }        
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i

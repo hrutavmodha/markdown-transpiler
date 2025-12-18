@@ -126,21 +126,21 @@ describe('Parser', () => {
                 type: 'Text',
                 children: ['__unclosed italics']
             }
-        ]);
+        ])
         
         expect(parse('**unclosed bold')).toEqual([
             {
                 type: 'Text',
                 children: ['**unclosed bold']
             }
-        ]);
+        ])
         
         expect(parse('#no-space-heading')).toEqual([
             {
                 type: 'Text',
                 children: ['#no-space-heading']
             }
-        ]);
+        ])
 
         expect(parse('####### heading')).toEqual([
             {
@@ -150,7 +150,7 @@ describe('Parser', () => {
                 },
                 children: ['heading']
             }
-        ]);
+        ])
 
         expect(parse('plain text and **bold**')).toEqual([
             {
@@ -161,29 +161,29 @@ describe('Parser', () => {
                 type: 'Bold',
                 children: ['bold']
             }
-        ]);
+        ])
         
         expect(parse('text with !@#$ special chars')).toEqual([
             {
                 type: 'Text',
                 children: ['text with !@#$ special chars']
             }
-        ]);
+        ])
 
         expect(parse('`unclosed code')).toEqual([
             {
                 type: 'Text',
                 children: ['`unclosed code']
             }
-        ]);
+        ])
 
         expect(parse('```js\nconsole.log("Hello World")')).toEqual([
             {
                 type: 'Text',
                 children: ['```js\nconsole.log("Hello World")']
             }
-        ]);
-    });
+        ])
+    })
 
     it('should parse links', () => {
         const ast = parse('[My Link](https://example.com)')
@@ -196,8 +196,8 @@ describe('Parser', () => {
                 },
                 children: ['My Link']
             }
-        ]);
-    });
+        ])
+    })
 
     it('should parse links with nested markdown', () => {
         const ast = parse('[**My Bold Link**](https://example.com)')
@@ -215,8 +215,8 @@ describe('Parser', () => {
                     }
                 ]
             }
-        ]);
-    });
+        ])
+    })
 
     it('should parse broken link syntax as text', () => {
         expect(parse('[incomplete link')).toEqual([
@@ -224,6 +224,26 @@ describe('Parser', () => {
                 type: 'Text',
                 children: ['[incomplete link']
             }
-        ]);
-    });
+        ])
+    })
+
+    it('should parse block quote', () => {
+        expect(parse('> Note: This is block quote')).toEqual([{
+            type: 'BlockQuote',
+            children: ['Note: This is block quote']
+        }])
+    })
+
+    it('should parse nested markdown inside block quote', () => {
+        expect(parse('> **Note:** __This is nested blockQuote__')).toEqual([{
+            type: 'BlockQuote',
+            children: [{
+                type: 'Bold',
+                children: ['Note:']
+            }, {
+                type: 'Italics',
+                children: ['This is nested blockQuote']
+            }]
+        }])
+    })
 })
