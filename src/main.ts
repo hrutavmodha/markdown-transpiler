@@ -11,5 +11,3 @@ export default function transpile(src: string, debug: boolean) {
     }
     return htmlStr
 }
-
-transpile('![**Demo** __Alt `Text`__](https://unsplash.com/image.png)', true)
