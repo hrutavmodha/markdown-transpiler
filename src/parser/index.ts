@@ -137,7 +137,7 @@ export default function parse(src: string): Nodes {
                 k++
             }
 
-            let codeStart = k;
+            let codeStart = k
             while (
                 k < src.length &&
                 !isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])
@@ -146,7 +146,7 @@ export default function parse(src: string): Nodes {
             }
 
             if (k < src.length && isCodeBlock(src[k] as string + src[k + 1] + src[k + 2])) {
-                let code: string = src.substring(codeStart, k);
+                let code: string = src.substring(codeStart, k)
                 nodes.push({
                     type: 'CodeBlock',
                     metadata: {
@@ -156,7 +156,7 @@ export default function parse(src: string): Nodes {
                 })
                 i = k + 2
             } else {
-                let textContent: string = src.substring(i, k);
+                let textContent: string = src.substring(i, k)
                 nodes.push({
                     type: 'Text',
                     children: [textContent]
@@ -238,37 +238,37 @@ export default function parse(src: string): Nodes {
         }
         // Links
         else if (src[i] === '[') {
-            let k: number = i + 1;
-            let linkTextEnd: number = -1;
+            let k: number = i + 1
+            let linkTextEnd: number = -1
 
             while (k < src.length) {
                 if (src[k] === ']') {
-                    linkTextEnd = k;
-                    break;
+                    linkTextEnd = k
+                    break
                 }
-                k++;
+                k++
             }
 
             if (linkTextEnd !== -1 && src[linkTextEnd + 1] === '(') {
-                let urlStart: number = linkTextEnd + 2;
-                let urlEnd: number = -1;
-                k = urlStart;
+                let urlStart: number = linkTextEnd + 2
+                let urlEnd: number = -1
+                k = urlStart
 
                 while (k < src.length) {
                     if (src[k] === ')') {
-                        urlEnd = k;
-                        break;
+                        urlEnd = k
+                        break
                     }
-                    k++;
+                    k++
                 }
 
                 if (urlEnd !== -1) {
-                    const linkStr: string = src.substring(i + 1, linkTextEnd);
-                    const urlStr: string = src.substring(urlStart, urlEnd);
-                    let childNodes: Nodes = [];
+                    const linkStr: string = src.substring(i + 1, linkTextEnd)
+                    const urlStr: string = src.substring(urlStart, urlEnd)
+                    let childNodes: Nodes = []
 
                     if (hasNestedMark(linkStr)) {
-                        childNodes = parse(linkStr);
+                        childNodes = parse(linkStr)
                     }
 
                     nodes.push({
@@ -277,25 +277,60 @@ export default function parse(src: string): Nodes {
                             href: urlStr
                         },
                         children: childNodes.length === 0 ? [linkStr] : childNodes
-                    });
-                    i = urlEnd;
+                    })
+                    i = urlEnd
                 } else {
-                    let text: string = src.substring(i, k);
+                    let text: string = src.substring(i, k)
                     nodes.push({
                         type: 'Text',
                         children: [text]
-                    });
-                    i = k - 1;
+                    })
+                    i = k - 1
                 }
             } else {
-                let text: string = src.substring(i, k);
+                let text: string = src.substring(i, k)
                 nodes.push({
                     type: 'Text',
                     children: [text]
-                });
-                i = k - 1;
+                })
+                i = k - 1
             }
         }  
+        // Images
+        else if (src[i] === '!' && src[i + 1] === '[') {
+            let altText: string = ''
+            let childNodes: Nodes = []
+            let k: number = i + 2
+            let imgSrc: string = ''
+            while (
+                k < src.length &&
+                src[k] !== ']'
+            ) {
+                altText += src[k]
+                k++
+            }
+            
+            if (hasNestedMark(altText)) {
+                childNodes = parse(altText)
+            }
+            k = k + 1
+            if (src[k] === '(') {
+                while (src[k + 1] !== ')') {
+                    imgSrc += src[k + 1]
+                    k++
+                }
+            }
+
+            nodes.push({
+                type: 'Image',
+                metadata: {
+                    src: imgSrc, 
+                    altText: childNodes.length === 0 ? [altText] : childNodes
+                }
+            })
+
+            i = k + 1
+        }
         // Block Quotes
         else if (
             src[i] === '>' &&
@@ -323,7 +358,7 @@ export default function parse(src: string): Nodes {
                 type: 'BlockQuote',
                 children: childNodes.length === 0 ? [blockQuoteStr] : childNodes
             })
-        }        
+        }
         // Normal Text
         else if (isAlphabet(src[i] as string)) {
             let k: number = i

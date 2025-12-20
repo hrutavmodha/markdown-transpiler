@@ -173,4 +173,29 @@ console.log("Hello World")
         }]
         expect(generate(nodes)).toBe('<blockquote><b>Note:</b><i>This is italics text in blockquote</i></blockquote>')
     })
+
+    it('should generate image tag', () => {
+        const nodes: Nodes = [{
+            type: 'Image',
+            metadata: {
+                src: 'http://localhost:3000/images/24',
+                altText: ['']
+            }
+        }]
+        expect(generate(nodes)).toBe('<img src="http://localhost:3000/images/24" alt="" />')
+    })
+
+    it('should generate markless alter text of image', () => {
+        const nodes: Nodes = [{
+            type: 'Image',
+            metadata: {
+                src: 'https://abcd.com/imgs/1269',
+                altText: [{
+                    type: 'Bold',
+                    children: ['Altered Bold Text']
+                }]
+            }
+        }]
+        expect(generate(nodes)).toBe('<img src="https://abcd.com/imgs/1269" alt="" />')
+    })
 });

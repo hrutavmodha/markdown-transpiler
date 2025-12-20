@@ -1,4 +1,5 @@
 import type { Nodes } from '../../types/token.d.ts'
+import { removeMarks } from './utils.ts'
 
 export default function generate(tokens: Nodes): string {
     let htmlStr: string = ''
@@ -48,6 +49,12 @@ export default function generate(tokens: Nodes): string {
                 break
             case 'Link':
                 htmlStr += `<a href="${token.metadata?.href}">${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</a>`
+                break
+            case 'Image':
+                // console.log('Token.Metadata.AltText =', token.metadata?.altText)
+                // TODO: Add logic for getting the normal text out of the MD AST
+                const normalAltText = removeMarks(token.metadata?.altText)
+                htmlStr += `<img src="${token.metadata?.src}" alt="${normalAltText}" />` 
                 break
             case 'BlockQuote':
                 htmlStr += `<blockquote>${typeof token.children?.[0] === 'object' ? generate(token?.children as any) : token.children?.[0]}</blockquote>`

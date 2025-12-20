@@ -187,7 +187,6 @@ describe('Parser', () => {
 
     it('should parse links', () => {
         const ast = parse('[My Link](https://example.com)')
-        console.log(JSON.stringify(ast, null, 4))
         expect(ast).toEqual([
             {
                 type: 'Link',
@@ -201,7 +200,6 @@ describe('Parser', () => {
 
     it('should parse links with nested markdown', () => {
         const ast = parse('[**My Bold Link**](https://example.com)')
-        console.log(JSON.stringify(ast, null, 4))
         expect(ast).toEqual([
             {
                 type: 'Link',
@@ -244,6 +242,31 @@ describe('Parser', () => {
                 type: 'Italics',
                 children: ['This is nested blockQuote']
             }]
+        }])
+    })
+
+    it('should parse image', () => {
+        expect(parse('![](https://unsplash.com/image.png)')).toEqual([{
+            type: 'Image',
+            metadata: {
+                altText: [''],
+                src: 'https://unsplash.com/image.png'
+            }
+        }])
+    })
+
+    it('should parse markdown in alter text', () => {
+        expect(parse('![__This is alt text__](https://unsplash.com/image.png)')).toEqual([{
+            type: 'Image',
+            metadata: {
+                src: 'https://unsplash.com/image.png',
+                altText: [{
+                    type: 'Italics',
+                    children: [
+                        'This is alt text'
+                    ]
+                }]
+            }
         }])
     })
 })
