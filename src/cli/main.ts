@@ -1,21 +1,11 @@
-#!/usr/bin/env node
-
-import generate from './generator/index.ts'
-import parse from './parser/index.ts'
-import { readFileSync } from 'fs'
+import {
+    values,
+    positionals
+} from './options.ts'
+import showHelp from './help.ts'
+import transpile from '../main.ts'
 import { resolve } from 'path'
-
-export default function transpile(src: string, debug: boolean) {
-    const ast = parse(src)
-    const htmlStr = generate(ast)
-    if (debug) {
-        console.log('Source Code:\n', src)
-        console.log('Generated AST:\n', JSON.stringify(ast, null, 2))
-        console.log('Generated HTML String:\n', htmlStr)
-    }
-    return htmlStr
-}
-
+import { readFileSync } from 'fs'
 
 async function main() {
     if (values.help) {
