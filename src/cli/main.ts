@@ -1,14 +1,21 @@
+#!/usr/bin/env node
 import {
     values,
     positionals
 } from './options.ts'
 import showHelp from './help.ts'
-import transpile from '../main.ts'
+import transpile from '../transpile/index.ts'
 import { resolve } from 'path'
-import { readFileSync } from 'fs'
+import {
+    writeFileSync,
+    readFileSync
+} from 'fs'
 
 async function main() {
-    if (values.help) {
+    if (
+        values.help || 
+        process.argv.length  <= 2
+    ) {
         showHelp()
     }
 
@@ -41,7 +48,6 @@ async function main() {
         const result = transpile(src, values.debug ?? false)
         
         if (values.output) {
-            const { writeFileSync } = await import('node:fs')
             writeFileSync(values.output, result, 'utf8')
             if (!values.debug) {
                 console.log(`Output written to ${values.output}`)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import transpile from '../../src/main.ts'
+import transpile from '../../src/index.ts'
 
 describe('compiler', () => {
     it('should transpile a heading', () => {
