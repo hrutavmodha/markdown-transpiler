@@ -90,4 +90,11 @@ describe('compiler', () => {
         const actualHtml = transpile(markdown, true)
         expect(actualHtml).toBe(expectedHtml)
     })
+
+    it('should transpile the marked alt string in images as normal string', () => {
+        const markdown = '![**Bolded alter**](https://img.src.com/)'
+        const expectedHtml = '<img src="https://img.src.com/" alt="Bolded alter" />'
+        const actualHtml = transpile(markdown, true)
+        expect(actualHtml).toBe(expectedHtml)
+    })
 })

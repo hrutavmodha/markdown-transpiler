@@ -190,12 +190,9 @@ console.log("Hello World")
             type: 'Image',
             metadata: {
                 src: 'https://abcd.com/imgs/1269',
-                altText: [{
-                    type: 'Bold',
-                    children: ['Altered Bold Text']
-                }]
+                altText: ['Altered Bold Text']
             }
         }]
-        expect(generate(nodes)).toBe('<img src="https://abcd.com/imgs/1269" alt="" />')
+        expect(generate(nodes)).toBe('<img src="https://abcd.com/imgs/1269" alt="Altered Bold Text" />')
     })
 });

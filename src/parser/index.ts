@@ -3,7 +3,8 @@ import {
     isTextCharacter,
     isCodeBlock,
     hasNestedMark,
-    isAlphabet
+    isAlphabet,
+    removeMarks
 } from './utils.ts'
 
 export default function parse(src: string): Nodes {
@@ -299,7 +300,6 @@ export default function parse(src: string): Nodes {
         // Images
         else if (src[i] === '!' && src[i + 1] === '[') {
             let altText: string = ''
-            let childNodes: Nodes = []
             let k: number = i + 2
             let imgSrc: string = ''
             while (
@@ -309,23 +309,20 @@ export default function parse(src: string): Nodes {
                 altText += src[k]
                 k++
             }
-            
-            if (hasNestedMark(altText)) {
-                childNodes = parse(altText)
-            }
-            k = k + 1
+            k++
             if (src[k] === '(') {
                 while (src[k + 1] !== ')') {
                     imgSrc += src[k + 1]
                     k++
                 }
             }
-
+            
+            altText = removeMarks(altText)
             nodes.push({
                 type: 'Image',
                 metadata: {
                     src: imgSrc, 
-                    altText: childNodes.length === 0 ? [altText] : childNodes
+                    altText: [altText]
                 }
             })
 

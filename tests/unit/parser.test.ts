@@ -260,12 +260,9 @@ describe('Parser', () => {
             type: 'Image',
             metadata: {
                 src: 'https://unsplash.com/image.png',
-                altText: [{
-                    type: 'Italics',
-                    children: [
-                        'This is alt text'
-                    ]
-                }]
+                altText: [
+                    'This is alt text'
+                ]
             }
         }])
     })
